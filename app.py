@@ -14,6 +14,9 @@ lock = threading.Lock()
 # initialize a flask object
 app = Flask(__name__)
 
+vs = VideoStream(src=1).start()
+time.sleep(2.0)
+
 @app.route('/', methods = ['POST'])
 def index():
     return render_template('index.html')
@@ -25,8 +28,7 @@ def index2():
 
 def camera():
 	global vs, outputFrame, lock
-	vs = VideoStream(src=1).start()
-	time.sleep(2.0)
+
 	# grab global references to the video stream, output frame, and
 	# lock variables
 
@@ -61,7 +63,7 @@ def generate():
 		yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
 			bytearray(encodedImage) + b'\r\n')
 
-@app.route("/video_feed")
+@app.route('/video_feed')
 def video_feed():
 	# return the response generated along with the specific media
 	# type (mime type)
