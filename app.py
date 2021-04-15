@@ -1,7 +1,7 @@
 from flask import Flask, render_template, Response, request
-from imutils.video import VideoStream
-import threading
 import imutils
+import threading
+from imutils.video import VideoStream
 import time
 import cv2
 from pose_est import pose_det
