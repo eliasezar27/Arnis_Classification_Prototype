@@ -14,7 +14,7 @@ lock = threading.Lock()
 # initialize a flask object
 app = Flask(__name__)
 
-vs = VideoStream(src=1).start()
+vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
 @app.route('/', methods = ['POST'])
