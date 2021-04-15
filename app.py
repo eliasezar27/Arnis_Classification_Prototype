@@ -14,6 +14,9 @@ lock = threading.Lock()
 # initialize a flask object
 app = Flask(__name__)
 
+vs = VideoStream(src=1).start()
+time.sleep(2.0)
+
 @app.route('/', methods = ['POST'])
 def index():
     return render_template('index.html')
@@ -25,8 +28,7 @@ def index2():
 
 def camera():
 	global vs, outputFrame, lock
-	vs = VideoStream(src=1).start()
-	time.sleep(2.0)
+
 	# grab global references to the video stream, output frame, and
 	# lock variables
 
