@@ -14,7 +14,7 @@ lock = threading.Lock()
 # initialize a flask object
 app = Flask(__name__)
 
-vs = VideoStream(src=1)
+vs = VideoStream(src=0)
 time.sleep(2.0)
 
 
