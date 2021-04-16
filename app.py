@@ -14,21 +14,22 @@ lock = threading.Lock()
 # initialize a flask object
 app = Flask(__name__)
 
-vs = VideoStream(src=0).start()
+vs = VideoStream(src=1)
 time.sleep(2.0)
 
-@app.route('/', methods = ['POST'])
-def index():
-    return render_template('index.html')
 
-@app.route('/opencam', methods = ['POST'])
+@app.route('/', methods = ['GET', 'POST'])
+def index():
+	return render_template('index.html')
+
+@app.route('/opencam', methods = ['GET', 'POST'])
 def index2():
 	answer = request.form['response']
 	return render_template('index.html', ans = answer)
 
 def camera():
 	global vs, outputFrame, lock
-
+	time.sleep(2.0)
 	# grab global references to the video stream, output frame, and
 	# lock variables
 
@@ -42,6 +43,7 @@ def camera():
 		# lock
 		with lock:
 			outputFrame = frame.copy()
+
 
 def generate():
 	# grab global references to the output frame and lock variables
@@ -60,15 +62,13 @@ def generate():
 			if not flag:
 				continue
 		# yield the output frame in the byte format
-		yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-			bytearray(encodedImage) + b'\r\n')
+		yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
 	# return the response generated along with the specific media
 	# type (mime type)
-	return Response(generate(),
-		mimetype = "multipart/x-mixed-replace; boundary=frame")
+	return Response(generate(),mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 if __name__ == '__main__':
 	# construct the argument parser and parse command line arguments
@@ -77,7 +77,6 @@ if __name__ == '__main__':
 	t.daemon = True
 	t.start()
 	# start the flask app
-	app.run(debug=True,
-		threaded=True, use_reloader=False)
+	app.run(debug=True, threaded=True, use_reloader=False)
 # release the video stream pointer
 vs.stop()
