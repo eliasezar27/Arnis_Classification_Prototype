@@ -26,8 +26,11 @@ def pose_det(frame):
                 print(id, cx, cy, 'th: ', thr)
 
     label = strike(joints)
+    lab_len = int(len(label) * 26.5)
+    if lab_len > 450:
+        lab_len = 480
     frame = cv2.flip(frame, 1)
-    frame = cv2.rectangle(frame, (0, 550), (450, h), (255, 255, 255), cv2.FILLED)
+    frame = cv2.rectangle(frame, (0, h), (lab_len, h-45), (255, 255, 255), cv2.FILLED)
     frame = cv2.putText(frame, label, (1, h - 15), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2, cv2.LINE_AA)
 
 
