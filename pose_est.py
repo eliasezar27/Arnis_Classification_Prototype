@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-from strikes import strike
+from strikes import strike, joint_angles
 
 mpPose = mp.solutions.pose
 pose = mpPose.Pose()
@@ -10,6 +10,7 @@ mpDraw = mp.solutions.drawing_utils
 def pose_det(frame):
     imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     h, w, c = frame.shape
+
     results = pose.process(imgRGB)
 
     # print(results.pose_landmarks)
@@ -35,3 +36,50 @@ def pose_det(frame):
 
 
     return frame
+
+def angle_det(frame):
+    imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    h, w, c = frame.shape
+    results = pose.process(imgRGB)
+
+    # print(results.pose_landmarks)
+    joints = {}
+    if results.pose_landmarks:
+        mpDraw.draw_landmarks(frame, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
+
+        for id, lm in enumerate(results.pose_landmarks.landmark):
+            # print(id, lm)
+            cx, cy, thr = int(lm.x * w), int(lm.y * h), lm.visibility
+
+            if thr > 0.5:
+                joints[id] = (cx, cy)
+                print(id, cx, cy, 'th: ', thr)
+
+    joints_angles = joint_angles(joints)
+
+    if 14 in joints:
+        frame = cv2.putText(frame, str(joints_angles['right elbow']), joints[14], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 12 in joints:
+        frame = cv2.putText(frame, str(joints_angles['right shoulder']), joints[12], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 24 in joints:
+        frame = cv2.putText(frame, str(joints_angles['right hip']), joints[24], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 26 in joints:
+        frame = cv2.putText(frame, str(joints_angles['right knee']), joints[26], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 13 in joints:
+        frame = cv2.putText(frame, str(joints_angles['left elbow']), joints[13], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 11 in joints:
+        frame = cv2.putText(frame, str(joints_angles['left shoulder']), joints[11], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 23 in joints:
+        frame = cv2.putText(frame, str(joints_angles['left hip']), joints[23], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+    if 25 in joints:
+        frame = cv2.putText(frame, str(joints_angles['left knee']), joints[25], cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
+
+
+    return frame, joints_angles
